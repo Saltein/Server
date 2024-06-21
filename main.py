@@ -5,6 +5,7 @@ from flask import jsonify
 import traceback, json
 from sqliteMode import *
 from func import *
+from _datetime import datetime
 
 # create flask object
 app = Flask(__name__)
@@ -49,6 +50,74 @@ def registrations():
             return jsonify({"action": "errorData"})
     except Exception as e:
         return jsonify({"action": "errorData"})
+
+
+
+# Working with consent
+@app.route('/consent/save_response', methods=['POST'])
+def saveUserConsent():
+    """
+    Route for saving user's consent response.
+
+    Expects JSON data with the following fields:
+    - id_tg: Telegram ID of the user (int)
+    - response: User's response ('accept' or 'decline')
+    - timestamp: Timestamp of the response (string)
+
+    Returns:
+    - {"action": "success"} if data is successfully saved.
+    - {"action": "errorData"} if there is an error during the process.
+    """
+    try:
+
+        id_agreement = GenerateAlfNumStr(7)
+        id_user = request.json["id_user"]
+        response = request.json["response"]
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Example of inserting data into your database (modify as per your database structure):
+        status = InsertData("agreement", f'"{id_agreement}","{id_user}", "{response}", "{timestamp}"')
+
+        if len(status) > 0:
+
+            return jsonify({"action": "success"})
+        else:
+            return jsonify({"action": "errorData"})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
+
+
+
+
+@app.route('/consent/get_response', methods=['POST'])
+def getUserConsent():
+        """
+        Route for retrieving user's consent response.
+
+        Expects JSON data with the following fields:
+        - id_tg: Telegram ID of the user (int)
+
+        Returns:
+        - {"action": "success", "data": {"response": <response>, "timestamp": <timestamp>}}
+          if data is successfully retrieved.
+        - {"action": "errorData"} if there is an error during the process.
+        """
+        try:
+            id_user = request.json["id_user"]
+
+            # Example of retrieving data from your database (modify as per your database structure):
+            response_data = SelectData(T="agreement", C= "id_user", V= id_user)
+            if response_data:
+                response = response_data["response"]
+                timestamp = response_data["datetime"]
+                id_agreement = response_data["id_agreement"]
+
+                return jsonify({"action": "success", "data": {"response": response, "datetime": timestamp, "id_agreement":id_agreement}})
+            else:
+                return jsonify({"action": "errorData", "data": {"response": None, "datetime": None}})
+        except Exception as e:
+            return jsonify({"action": "errorData"})
+
+
 
 
 # Working with trips
@@ -98,6 +167,7 @@ def TripsDrivers():
     except Exception as e:
         ##print(traceback.format_exc())
         return jsonify({"action": "errorData"})
+
 
 
 @app.route('/gettrips/trips/suitableTrips', methods=['POST'])
