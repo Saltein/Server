@@ -1,7 +1,7 @@
 #import modules 
 import sqlite3 as sq
 
-
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 #Connecting to a database and creating a cursor
 con = sq.connect("bd.db", check_same_thread=False)
@@ -80,5 +80,9 @@ def SelectAllData(T, C, V, S="*"):
         return newList
     except Exception as e:
         return []
+
+
+
+
 
 
