@@ -34,6 +34,61 @@ def getUsers():
         return jsonify({"action": "success", "data": data})
     except Exception as e:
         return jsonify({"action": "errorData"})
+    
+@app.route('/balance/getusers', methods=['POST'])
+def getUsersBalance():
+    """route for getting users balance"""
+    try:
+        user_id = request.json['user_id']
+        user_balance = SelectData("balance", "user_id", user_id, "summ" )["summ"]
+        
+        return jsonify({"action": "success", "balance": user_balance})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
+    
+@app.route('/balance/spending', methods=['POST'])
+def SpendTheBalance():
+    """route for spending users balance"""
+    try:
+        user_id = request.json['user_id']
+        deduction = request.json['deduction']
+
+        user_balance = SelectData("balance", "user_id", user_id, "summ" )["summ"]
+
+        user_balance -= deduction
+
+        UpdateData("balance", "summ", user_balance, "user_id", user_id)
+        #create a transaction
+        current_datetime = str(datetime.now())
+        transaction_id = GenerateAlfNumStr(10)
+        transaction_data = f'"{transaction_id}", "{user_id}", "{deduction}", "{current_datetime}", "purchase" '
+        InsertData("transactions", transaction_data)
+
+        return jsonify({"action": "success", "balance": user_balance})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
+    
+@app.route('/balance/recharging', methods=['POST'])
+def RechargeTheBalance():
+    """route for recharging users balance"""
+    try:
+        credit = request.json['credit']
+        user_id = request.json['user_id']
+        user_balance = SelectData("balance", "user_id", user_id, "summ" )["summ"]
+
+        user_balance += credit
+
+        UpdateData("balance", "summ", user_balance, "user_id", user_id)
+
+        #create a transaction
+        current_datetime = str(datetime.now())
+        transaction_id = GenerateAlfNumStr(10)
+        transaction_data = f'"{transaction_id}", "{user_id}", "{credit}", "{current_datetime}", "deposit" '
+        InsertData("transactions", transaction_data)
+        
+        return jsonify({"action": "success", "balance": user_balance})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
 
 
 @app.route('/registrations', methods=['POST'])
