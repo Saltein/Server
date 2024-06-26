@@ -96,15 +96,23 @@ def registrations():
     """route for  register users"""
     try:
         idUser = GenerateAlfNumStr(10)
+        idBalance = GenerateAlfNumStr(10)
         INNSI = f'"{idUser}", "{request.json["name"]}", "{request.json["numb"]}", "{request.json["id_tg"]}", "{request.json["surname"]}"'
         check = InsertData(T="users", V=INNSI)
         con.commit()
-        if len(check) > 1:
+        try:
+            startBalanceData = f'"{idBalance}", "{idUser}", "{float(500)}" '
+            startBalance = InsertData(T="balance", V = startBalanceData)
+            con.commit()
+        except:
+            return jsonify({"action": "error3Data"})
+        if len(check) > 1 and len(startBalance)>1:
             return jsonify({"action": "success", "id": idUser})
         else:
-            return jsonify({"action": "errorData"})
+            return jsonify({"action": "error2Data"})
     except Exception as e:
-        return jsonify({"action": "errorData"})
+        return jsonify({"action": "error1Data"})
+
 
 
 
