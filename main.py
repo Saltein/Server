@@ -103,7 +103,6 @@ def getUserConsent():
         """
         try:
             user_tg_id = request.json["user_tg_id"]
-
             # Example of retrieving data from your database (modify as per your database structure):
             response_data = SelectData(T="agreement", C= "user_tg_id", V= user_tg_id)
             if response_data:
