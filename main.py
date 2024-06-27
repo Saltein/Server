@@ -107,6 +107,7 @@ def RechargeTheBalance():
 
         return jsonify({"action": "success", "balance": user_balance})
     except Exception as e:
+        return jsonify({"action": "errorData"})
 
         
 # Working with consent
