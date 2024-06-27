@@ -128,9 +128,3 @@ def SelectAllData(T, C, V, S="*"):
         return newList
     except Exception as e:
         return []
-
-
-
-
-
-
