@@ -17,7 +17,6 @@ def checkUser():
     """"route for verify the user by telegram id"""
     try:
         check = CheckUserIdTg(request.json["id_tg"])
-        ##print(check)
         if len(check) > 0:
             return jsonify({"action": "success", "name": check["name"], "id": check["id"]})
         else:
@@ -283,7 +282,6 @@ def setAgreedTrips():
                 return jsonify({"action": "success", "status": "success"})
             return jsonify({"action": "errorData1"})
     except Exception as e:
-        ##print(traceback.format_exc())
         return jsonify({"action": "errorData"})
 
 
