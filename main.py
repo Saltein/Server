@@ -407,6 +407,27 @@ def updateTripStatus():
         return jsonify({"action": f"errorData {e}"})
 
 
+# ----------------- admin -----------------
+@app.route('/admin/get_by_number', methods=['POST'])
+def AdminGetByNumber():
+        """
+        Admin route for retrieving all users by number.
+        """
+
+        request_number = request.json["numb"]
+
+        try:
+            # Example of retrieving data from your database (modify as per your database structure):
+            user_data = SelectAllData("users", "numb", request_number)
+            if user_data:
+                return jsonify({"action": "success", "data": user_data})
+            else:
+                return jsonify({"action": "errorData", "data": "error"})
+        except Exception as e:
+            return jsonify({"action": "errorData"})
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
 
