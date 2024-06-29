@@ -444,6 +444,16 @@ def get_trips_by_direction():
         return jsonify({"action": "errorData"})
 
 
+@app.route('/get_drivers/by_status', methods=['GET'])
+def get_drivers_by_status():
+    try:
+        data = SelectAllData("is_become_driver", "status", request.json["status"])
+        return jsonify({"action": "success", "data": data})
+    except Exception as e:
+        print(e)
+        return jsonify({"action": "errorData"})
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
