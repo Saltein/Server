@@ -344,6 +344,16 @@ def updateTripStatus():
         return jsonify({"action": f"errorData {e}"})
 
 
+@app.route('/gettrips/getTripsByDirection', methods=['GET'])
+def get_trips_by_direction():
+    try:
+        data = SelectAllData("trips", "direction_name", f'{request.json["direction_name"]}')
+        return jsonify({"action": "success", "data": data})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001)
 
