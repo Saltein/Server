@@ -177,6 +177,67 @@ def getUserConsent():
             return jsonify({"action": "errorData"})
 
 
+@app.route('/check_drivers/save_drivers', methods=['POST'])
+def saveDriversCheck():
+    """
+    Route for saving user's consent response.
+
+    Expects JSON data with the following fields:
+    - id_tg: Telegram ID of the user (int)
+    - response: User's response ('accept' or 'decline')
+    - timestamp: Timestamp of the response (string)
+
+    Returns:
+    - {"action": "success"} if data is successfully saved.
+    - {"action": "errorData"} if there is an error during the process.
+    """
+    try:
+
+        id_become = GenerateAlfNumStr(7)
+        id_user = request.json["id_user"]
+        status = request.json["status"]
+        timedate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # Example of inserting data into your database (modify as per your database structure):
+        insertstatus = InsertData("is_become_driver", f'"{id_become}","{id_user}", "{status}", "{timedate}"')
+
+        if len(insertstatus) > 0:
+            return jsonify({"action": "success"})
+        else:
+            return jsonify({"action": "errorData"})
+    except Exception as e:
+        return jsonify({"action": "errorData"})
+
+
+
+
+@app.route('/check_drivers/get_drivers', methods=['POST'])
+def getDriversCheck():
+        """
+        Route for retrieving user's consent response.
+
+        Expects JSON data with the following fields:
+        - id_tg: Telegram ID of the user (int)
+
+        Returns:
+        - {"action": "success", "data": {"response": <response>, "timestamp": <timestamp>}}
+          if data is successfully retrieved.
+        - {"action": "errorData"} if there is an error during the process.
+        """
+        try:
+            id_user = request.json["id_user"]
+
+            # Example of retrieving data from your database (modify as per your database structure):
+            status_data = SelectData(T="is_become_driver", C= "id_user", V= id_user)
+            if status_data:
+                status = status_data["status"]
+                timedate = status_data["datetime"]
+                id_become = status_data["id_become"]
+
+                return jsonify({"action": "success", "data": {"status": status, "datetime": timedate, "id_become":id_become}})
+            else:
+                return jsonify({"action": "errorData", "data": {"status": None, "datetime": None}})
+        except Exception as e:
+            return jsonify({"action": "errorData"})
 
 
 # Working with trips ---------------------------------------------------------
@@ -348,6 +409,27 @@ def updateTripStatus():
         return jsonify({"action": "error"})
     except Exception as e:
         return jsonify({"action": f"errorData {e}"})
+
+
+# ----------------- admin -----------------
+@app.route('/admin/get_by_number', methods=['POST'])
+def AdminGetByNumber():
+        """
+        Admin route for retrieving all users by number.
+        """
+
+        request_number = request.json["numb"]
+
+        try:
+            # Example of retrieving data from your database (modify as per your database structure):
+            user_data = SelectAllData("users", "numb", request_number)
+            if user_data:
+                return jsonify({"action": "success", "data": user_data})
+            else:
+                return jsonify({"action": "errorData", "data": "error"})
+        except Exception as e:
+            return jsonify({"action": "errorData"})
+
 
 
 if __name__ == '__main__':
