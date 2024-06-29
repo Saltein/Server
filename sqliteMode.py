@@ -19,7 +19,6 @@ cur = con.cursor()
 
 def TableExists(table_name):
     """Check if a table exists in the database"""
-    print('start TableExists')
     cur.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name=?", (table_name,))
     if cur.fetchone()[0] == 1:
         return True
@@ -29,7 +28,7 @@ def TableExists(table_name):
 
 def CreateTable(table_name):
     """Create a table in the database"""
-    print("start CreateTable")
+    ("start CreateTable")
     columns = ""
     match table_name:
         case 'users':
@@ -51,11 +50,7 @@ def CreateTable(table_name):
         case 'agreement':
             columns = 'id_agreement TEXT, id_user TEXT, response INT, datetime TEXT'
         case _:
-            print("start CreateTable Unknown table name")
             raise ValueError(f"Unknown table name '{table_name}'")
-    print("columns: ", columns)
-    print(f"CREATE TABLE {table_name}({columns})")
-
     cur.execute(f"CREATE TABLE {table_name}({columns})")
 
 
@@ -77,7 +72,6 @@ def InsertData(T, V, C=""):
         con.commit()
         return [1, 2]
     except Exception as e:
-        print(e)
         return []
 
 
@@ -128,9 +122,3 @@ def SelectAllData(T, C, V, S="*"):
         return newList
     except Exception as e:
         return []
-
-
-
-
-
-
