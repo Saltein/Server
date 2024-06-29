@@ -17,6 +17,7 @@ def checkUser():
     """"route for verify the user by telegram id"""
     try:
         check = CheckUserIdTg(request.json["id_tg"])
+        ##print(check)
         if len(check) > 0:
             return jsonify({"action": "success", "name": check["name"], "id": check["id"]})
         else:
@@ -40,10 +41,16 @@ def registrations():
     """route for  register users"""
     try:
         idUser = GenerateAlfNumStr(10)
+        idBalance = GenerateAlfNumStr(10)
         INNSI = f'"{idUser}", "{request.json["name"]}", "{request.json["numb"]}", "{request.json["id_tg"]}", "{request.json["surname"]}"'
         check = InsertData(T="users", V=INNSI)
+
+        #set to balance 500 points
+        startBalanceData = f'"{idBalance}", "{idUser}", "{float(500)}" '
+        startBalance = InsertData(T="balance", V=startBalanceData)
+
         con.commit()
-        if len(check) > 1:
+        if len(check) > 1 and len(startBalance) > 1:
             return jsonify({"action": "success", "id": idUser})
         else:
             return jsonify({"action": "errorData"})
@@ -57,12 +64,11 @@ def getUsersBalance():
     try:
         user_id = request.json['user_id']
         user_balance = SelectData("balance", "user_id", user_id, "summ" )["summ"]
-
+        
         return jsonify({"action": "success", "balance": user_balance})
     except Exception as e:
         return jsonify({"action": "errorData"})
-
-
+    
 @app.route('/balance/spending', methods=['POST'])
 def SpendTheBalance():
     """route for spending users balance"""
@@ -84,8 +90,7 @@ def SpendTheBalance():
         return jsonify({"action": "success", "balance": user_balance})
     except Exception as e:
         return jsonify({"action": "errorData"})
-
-
+    
 @app.route('/balance/recharging', methods=['POST'])
 def RechargeTheBalance():
     """route for recharging users balance"""
@@ -103,12 +108,11 @@ def RechargeTheBalance():
         transaction_id = GenerateAlfNumStr(10)
         transaction_data = f'"{transaction_id}", "{user_id}", "{credit}", "{current_datetime}", "deposit" '
         InsertData("transactions", transaction_data)
-
+        
         return jsonify({"action": "success", "balance": user_balance})
     except Exception as e:
         return jsonify({"action": "errorData"})
 
-        
 # Working with consent
 @app.route('/consent/save_response', methods=['POST'])
 def saveUserConsent():
@@ -200,7 +204,7 @@ def сreatingTrips():
             return jsonify({"action": "errorData"})
     except Exception as e:
         return jsonify({"action": "errorData"})
-
+      
 
 @app.route('/gettrips/trips', methods=['POST'])
 def getTrips():
@@ -210,6 +214,7 @@ def getTrips():
         return jsonify({"action": "success", "data": data})
     except Exception as e:
         return jsonify({"action": "errorData"})
+     
 
 
 @app.route('/gettrips/trips/Trips', methods=['POST'])
@@ -220,6 +225,7 @@ def TripsDrivers():
         return jsonify({"action": "success", "data": data})
     except Exception as e:
         return jsonify({"action": "errorData"})
+
 
 
 @app.route('/gettrips/trips/suitableTrips', methods=['POST'])
