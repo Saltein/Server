@@ -411,7 +411,16 @@ def updateTripStatus():
         return jsonify({"action": f"errorData {e}"})
 
 
+@app.route('/reviews/create', methods=['POST'])
+def createReview():
+    try:
+        IIT = f'"{GenerateAlfNumStr(10)}", "{request.json["id_trip"]}", "{request.json["review_text"]}"'
+        check = InsertData(T='trip_reviews', V=IIT)
+        return jsonify({"action": "success"}, check), 201
 
+    except Exception as e:
+        app.logger.error(f"Error occurred: {e}")
+        return jsonify({"action": f"errorData {e}"}), 500
 
 
 # ----------------- admin -----------------

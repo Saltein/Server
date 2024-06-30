@@ -49,6 +49,10 @@ def CreateTable(table_name):
             columns = 'agreeding_trips_id TEXT, driver_trip_id TEXT, maximum_number_of_passengers INTEGER, number_of_passengers INTEGER, ids_trips TEXT, status TEXT'
         case 'agreement':
             columns = 'id_agreement TEXT, id_user TEXT, response INT, datetime TEXT'
+        case 'is_become_driver':
+            columns = 'id_become TEXT, id_user TEXT, status INTEGER, datetime TEXT'
+        case 'trip_reviews':
+            columns = 'id_review TEXT, id_trip TEXT, review_text TEXT'
         case _:
             raise ValueError(f"Unknown table name '{table_name}'")
     cur.execute(f"CREATE TABLE {table_name}({columns})")
